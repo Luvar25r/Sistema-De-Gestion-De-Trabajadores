@@ -1,5 +1,5 @@
 //Programa creado originalmente el 9 de Agosto de 2024 por: Luis Eduardo Vadillo Rojas
-
+//Sistema de Gestión de Trabajadores
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +7,7 @@
 
 
 
-//Programa Sistema de Gestion de Trabajadores --------------------------------------------------------------------------
+//Modulo de Datos de Trabajadores  --------------------------------------------------------------------------
 
 #define CAPACIDAD 50000 // Tamano de la Tabla Hash
 
@@ -27,15 +27,16 @@ typedef struct {
 	char pais_origen[100];
 	char ciudad_residencia[100];
 	char num_cuenta[20];
-	char genero;  // Nuevo campo para gC)nero
+	char genero;
 	int proporciono_ine;
 	int proporciono_comprobante_domicilio;
 	int proporciono_comprobante_estudios;
-} Trabajador_hash;
+} DatosTrabajador;  //Estructura de datos que contiene los datos del trabajador
 
 typedef struct {
-	Trabajador_hash* trabajador;
-} ElementoHash;
+	DatosTrabajador* trabajador;
+} ElementoHash; /*Estructura que define que cada trabajador debe tener cada
+									/dato que se encuentra en la estructura DatosTrabajador.*/
 
 typedef struct {
 	ElementoHash** elementos;
@@ -43,7 +44,7 @@ typedef struct {
 	int conteo;
 } TablaHash;
 
-// FunciC3n hash basada en el primer apellido
+// Funcion hash creada en el primer apellido
 unsigned long funcion_hash(char* str) {
 	unsigned long i = 0;
 	for (int j = 0; str[j]; j++)
@@ -52,7 +53,7 @@ unsigned long funcion_hash(char* str) {
 }
 
 // Crear un nuevo elemento de la tabla hash
-ElementoHash* crear_elemento(Trabajador_hash* trabajador) {
+ElementoHash* crear_elemento(DatosTrabajador* trabajador) {
 	ElementoHash* elemento = (ElementoHash*)malloc(sizeof(ElementoHash));
 	elemento->trabajador = trabajador;
 	return elemento;
@@ -68,14 +69,14 @@ TablaHash* crear_tabla(int tamano) {
 }
 
 // Insertar un trabajador en la tabla hash
-void insertar(TablaHash* tabla, Trabajador_hash* trabajador) {
+void insertar(TablaHash* tabla, DatosTrabajador* trabajador) {
 	unsigned long indice = funcion_hash(trabajador->primer_apellido);
 	ElementoHash* elemento = crear_elemento(trabajador);
 	if (tabla->elementos[indice] == NULL) {
 		tabla->elementos[indice] = elemento;
 		tabla->conteo++;
 	} else {
-		// Manejar colisiC3n (sondeo lineal)
+		// Manejar colision (sondeo lineal)
 		while (tabla->elementos[indice] != NULL) {
 			indice = (indice + 1) % tabla->tamano;
 		}
@@ -85,7 +86,7 @@ void insertar(TablaHash* tabla, Trabajador_hash* trabajador) {
 }
 
 // Buscar un trabajador por primer apellido en la tabla hash
-Trabajador_hash* buscar(TablaHash* tabla, char* primer_apellido) {
+DatosTrabajador* buscar(TablaHash* tabla, char* primer_apellido) {
 	unsigned long indice = funcion_hash(primer_apellido);
 	while (tabla->elementos[indice] != NULL) {
 		if (strcmp(tabla->elementos[indice]->trabajador->primer_apellido, primer_apellido) == 0) {
@@ -96,8 +97,8 @@ Trabajador_hash* buscar(TablaHash* tabla, char* primer_apellido) {
 	return NULL;
 }
 
-// Mostrar la informaciC3n de un trabajador
-void mostrar_trabajador(Trabajador_hash* trabajador) {
+// Mostrar la informacion de un trabajador
+void mostrar_trabajador(DatosTrabajador* trabajador) {
 	if (trabajador == NULL) {
 		printf("Trabajador no encontrado.\n");
 		return;
@@ -105,16 +106,16 @@ void mostrar_trabajador(Trabajador_hash* trabajador) {
 	printf("\n\nNombres: %s\n", trabajador->nombres);
 	printf("Primer Apellido: %s\n", trabajador->primer_apellido);
 	printf("Segundo Apellido: %s\n", trabajador->segundo_apellido);
-	printf("GC)nero: %c\n", trabajador->genero);  // Muestra el gC)nero
+	printf("Genero: %c\n", trabajador->genero);  // Muestra el gC)nero
 	printf("CURP: %s\n", trabajador->curp);
 	printf("RFC: %s\n", trabajador->rfc);
 	printf("NSS: %s\n", trabajador->nss); //Numero de Seguridad Social
-	printf("PaC-s de Origen: %s\n", trabajador->pais_origen);
+	printf("Pais de Origen: %s\n", trabajador->pais_origen);
 	printf("Ciudad de Residencia: %s\n", trabajador->ciudad_residencia);
-	printf("NC:mero de Cuenta: %s\n", trabajador->num_cuenta);
-	printf("ProporcionC3 INE: %s\n", trabajador->proporciono_ine ? "SC-" : "No");
-	printf("ProporcionC3 Comprobante de Domicilio: %s\n", trabajador->proporciono_comprobante_domicilio ? "SC-" : "No");
-	printf("ProporcionC3 Comprobante de Estudios: %s\n", trabajador->proporciono_comprobante_estudios ? "SC-" : "No");
+	printf("Numero de Cuenta: %s\n", trabajador->num_cuenta);
+	printf("Proporciono INE: %s\n", trabajador->proporciono_ine ? "Si" : "No");
+	printf("Proporciono Comprobante de Domicilio: %s\n", trabajador->proporciono_comprobante_domicilio ? "Si" : "No");
+	printf("Proporciono Comprobante de Estudios: %s\n", trabajador->proporciono_comprobante_estudios ? "Si" : "No");
 }
 
 // Mostrar todos los trabajadores registrados
@@ -133,7 +134,7 @@ void mostrar_todos_los_trabajadores(TablaHash* tabla) {
 }
 
 // Editar los datos de un trabajador
-void editar_trabajador(Trabajador_hash* trabajador) {
+void editar_trabajador(DatosTrabajador* trabajador) {
 	if (trabajador == NULL) {
 		printf("Trabajador no encontrado.\n");
 		return;
@@ -149,7 +150,7 @@ void editar_trabajador(Trabajador_hash* trabajador) {
 	strtok(trabajador->ciudad_residencia, "\n");
 
 	// Editar gC)nero
-	printf("GC)nero actual: %c. Ingrese nuevo gC)nero (M/F/X, o presione Enter para dejar sin cambios): ", trabajador->genero);
+	printf("Genero actual: %c. Ingrese nuevo genero (M/F/X, o presione Enter para dejar sin cambios): ", trabajador->genero);
 	char nuevo_genero = getchar();
 	limpiar_buffer();  // Limpiar el buffer de entrada
 	if (nuevo_genero == 'M' || nuevo_genero == 'F' || nuevo_genero == 'X') {
@@ -186,28 +187,28 @@ void liberar_tabla(TablaHash* tabla) {
 	free(tabla);
 }
 
-// FunciC3n principal
+// Funcion principal
 void sys_ges_tra() {
 	TablaHash* tabla = crear_tabla(CAPACIDAD);
 	int opcion;
 	char primer_apellido[100];
-	Trabajador_hash* trabajador;
+	DatosTrabajador* trabajador;
 
 	do {
-		printf("\n--- Sistema de GestiC3n de Trabajadores ---\n");
+		printf("\n--- Sistema de Gestion de Trabajadores ---\n");
 		printf("1. Agregar Trabajador\n");
 		printf("2. Editar Trabajador\n");
 		printf("3. Buscar Trabajador\n");
 		printf("4. Mostrar Todos los Trabajadores\n");
 		printf("5. Eliminar Trabajador\n");
 		printf("6. Salir\n");
-		printf("Seleccione una opciC3n: ");
+		printf("Seleccione una opcion: ");
 		scanf("%d", &opcion);
-		getchar(); // Limpia el salto de lC-nea residual del buffer
+		limpiar_buffer(); // Limpia el salto de linea residual del buffer
 
 		switch (opcion) {
 		case 1:
-			trabajador = (Trabajador_hash*)malloc(sizeof(Trabajador_hash));
+			trabajador = (DatosTrabajador*)malloc(sizeof(DatosTrabajador));
 
 			printf("Ingrese Nombres: ");
 			fgets(trabajador->nombres, 100, stdin);
@@ -222,12 +223,12 @@ void sys_ges_tra() {
 			strtok(trabajador->segundo_apellido, "\n");
 
 			// Agregar gC)nero
-			printf("Ingrese GC)nero (M para Masculino, F para Femenino, X para No Binario): ");
+			printf("Ingrese Genero (M para Masculino, F para Femenino, X para No Binario): ");
 			trabajador->genero = getchar();
-			limpiar_buffer();  // Limpiamos el buffer despuC)s de leer el gC)nero
+			limpiar_buffer();  // Limpiamos el buffer despues de leer el gC)nero
 
 			if (trabajador->genero != 'M' && trabajador->genero != 'F' && trabajador->genero != 'X') {
-				printf("GC)nero no vC!lido.\n");
+				printf("GC)nero no valido.\n");
 				free(trabajador);
 				break;
 			}
@@ -235,10 +236,10 @@ void sys_ges_tra() {
 			printf("Ingrese CURP (Deben de ser 18 caracteres alfanumericos): ");
 			fgets(trabajador->curp, 19, stdin);
 			strtok(trabajador->curp, "\n");
-			limpiar_buffer();  // Limpiamos el buffer despuC)s de leer el CURP
+			limpiar_buffer();  // Limpiamos el buffer despues de leer el CURP
 
 			if (strlen(trabajador->curp) != 18 || strlen(trabajador->curp) > 18) {
-				printf("CURP invC!lida.\n");
+				printf("CURP invalida.\n");
 				free(trabajador);
 				return;
 			}
@@ -246,10 +247,10 @@ void sys_ges_tra() {
 			printf("Ingrese RFC (Deben ser 13 caracteres alfanumericos): ");
 			fgets(trabajador->rfc, 14, stdin);
 			strtok(trabajador->rfc, "\n");
-			limpiar_buffer();  // Limpiamos el buffer despuC)s de leer el RFC
+			limpiar_buffer();  // Limpiamos el buffer despues de leer el RFC
 
 			if (strlen(trabajador->rfc) != 13) {
-				printf("RFC invC!lido.\n");
+				printf("RFC invalido.\n");
 				free(trabajador);
 				return;
 			}
@@ -263,10 +264,10 @@ void sys_ges_tra() {
 				break;
 			}
 
-			printf("Ingrese PaC-s de Origen: ");
+			printf("Ingrese Pais de Origen: ");
 			fgets(trabajador->pais_origen, 100, stdin);
 			strtok(trabajador->pais_origen, "\n");
-			limpiar_buffer();  // Limpiamos el buffer despuC)s de leer el CURP
+			limpiar_buffer();  // Limpiamos el buffer despues de leer el CURP
 
 			printf("Ingrese Ciudad de Residencia: ");
 			fgets(trabajador->ciudad_residencia, 100, stdin);
@@ -276,28 +277,28 @@ void sys_ges_tra() {
 			fgets(trabajador->num_cuenta, 20, stdin);
 			strtok(trabajador->num_cuenta, "\n");
 
-			// ValidaciC3n para ProporcionC3 INE
-			printf("ProporcionC3 INE (1 para SC-, 0 para No): ");
+			// Validacion para Proporciono INE
+			printf("Proporciono INE (1 para Si, 0 para No): ");
 			while (scanf("%d", &trabajador->proporciono_ine) != 1 || (trabajador->proporciono_ine != 0 && trabajador->proporciono_ine != 1)) {
-				printf("Valor no vC!lido. Debe ser 0 o 1.\n");
-				printf("ProporcionC3 INE (1 para SC-, 0 para No): ");
-				getchar(); // Limpia el buffer de entrada
+				printf("Valor no valido. Debe ser 0 o 1.\n");
+				printf("Proporciono INE (1 para Si, 0 para No): ");
+				limpiar_buffer(); // Limpia el buffer de entrada
 			}
 
 			// ValidaciC3n para ProporcionC3 Comprobante de Domicilio
-			printf("ProporcionC3 Comprobante de Domicilio (1 para SC-, 0 para No): ");
+			printf("Proporciono Comprobante de Domicilio (1 para Si, 0 para No): ");
 			while (scanf("%d", &trabajador->proporciono_comprobante_domicilio) != 1 || (trabajador->proporciono_comprobante_domicilio != 0 && trabajador->proporciono_comprobante_domicilio != 1)) {
-				printf("Valor no vC!lido. Debe ser 0 o 1.\n");
-				printf("ProporcionC3 Comprobante de Domicilio (1 para SC-, 0 para No): ");
-				getchar(); // Limpia el buffer de entrada
+				printf("Valor no valido. Debe ser 0 o 1.\n");
+				printf("ProporcionC3 Comprobante de Domicilio (1 para Si, 0 para No): ");
+				limpiar_buffer(); // Limpia el buffer de entrada
 			}
 
-			// ValidaciC3n para ProporcionC3 Comprobante de Estudios
-			printf("ProporcionC3 Comprobante de Estudios (1 para SC-, 0 para No): ");
+			// ValidaciC3n para Proporciono Comprobante de Estudios
+			printf("Proporciono Comprobante de Estudios (1 para Si, 0 para No): ");
 			while (scanf("%d", &trabajador->proporciono_comprobante_estudios) != 1 || (trabajador->proporciono_comprobante_estudios != 0 && trabajador->proporciono_comprobante_estudios != 1)) {
-				printf("Valor no vC!lido. Debe ser 0 o 1.\n");
-				printf("ProporcionC3 Comprobante de Estudios (1 para SC-, 0 para No): ");
-				getchar(); // Limpia el buffer de entrada
+				printf("Valor no valido. Debe ser 0 o 1.\n");
+				printf("Proporciono Comprobante de Estudios (1 para Si, 0 para No): ");
+				limpiar_buffer(); // Limpia el buffer de entrada
 			}
 
 			// VerificaciC3n de documentos necesarios
@@ -359,14 +360,14 @@ void sys_ges_tra() {
 			break;
 
 		default:
-			printf("OpciC3n no vC!lida. Intente de nuevo.\n");
+			printf("Opcion no valida. Intente de nuevo.\n");
 		}
 	} while (opcion != 6);
 
 	liberar_tabla(tabla);
 }
 
-//FIN Sistema de GestiC3n de Trabajadores----------------------------------------------------------------------------------------
+//FIN Modulo de Datos de Trabajadores----------------------------------------------------------------------------------------
 
 
 
@@ -426,7 +427,7 @@ void registrar_trabajador() {
 			printf("Seleccione el tipo de jornada (0: Diurna, 1: Nocturna, 2: Mixta): ");
 			scanf("%d", &jornada);
 			if (jornada < 0 || jornada > 2) {
-				printf("Valor invC!lido. Por favor, seleccione un valor entre 0 y 2.\n");
+				printf("Valor invalido. Por favor, seleccione un valor entre 0 y 2.\n");
 			}
 		} while (jornada < 0 || jornada > 2);
 
@@ -440,10 +441,10 @@ void registrar_trabajador() {
 		trabajadores[num_trabajadores++] = t;
 		printf("Trabajador registrado: %s (ID: %d)\n", t.nombre, t.id);
 
-		printf("Ahora, registre las horas trabajadas este dC-a para este trabajador.\n");
+		printf("Ahora, registre las horas trabajadas este dia para este trabajador.\n");
 		registrar_horas(t.id);
 	} else {
-		printf("Error: NC:mero mC!ximo de trabajadores alcanzado.\n");
+		printf("Error: Numero maximo de trabajadores alcanzado.\n");
 	}
 }
 
@@ -452,7 +453,7 @@ void analizar_cumplimiento(Trabajador* t) {
 	float horas_esperadas = jornada_maxima * t->dias_trabajados;
 	float porcentaje_asistencia = (t->horas_trabajadas / horas_esperadas) * 100;
 
-	printf("\nAnC!lisis de cumplimiento para %s:\n", t->nombre);
+	printf("\nAnalisis de cumplimiento para %s:\n", t->nombre);
 	printf("- Tipo de jornada: %s\n", t->tipo_jornada == DIURNA ? "Diurna" : (t->tipo_jornada == NOCTURNA ? "Nocturna" : "Mixta"));
 	printf("- Jornada m%cxima diaria: %.2f horas\n", 160, jornada_maxima);
 	printf("- Horas trabajados: %d\n", t->dias_trabajados);
@@ -465,19 +466,19 @@ void analizar_cumplimiento(Trabajador* t) {
 	} else if (porcentaje_asistencia >= 80) {
 		printf("  El trabajador cumple con al menos el 80%% de asistencia.\n");
 	} else {
-		printf("  El trabajador no cumple con el mC-nimo del 80%% de asistencia.\n");
+		printf("  El trabajador no cumple con el minimo del 80%% de asistencia.\n");
 	}
 
 	if (t->horas_extras > 0) {
 		if (t->horas_extras <= HORAS_EXTRAS_MAX_SEMANA) {
-			printf("  Las horas extras estC!n dentro del lC-mite semanal permitido.\n");
+			printf("  Las horas extras estan dentro del limite semanal permitido.\n");
 		} else {
-			printf("  Se ha excedido el lC-mite semanal de horas extras.\n");
+			printf("  Se ha excedido el limite semanal de horas extras.\n");
 		}
 	}
 
 	if (t->dias_trabajados >= DIAS_LABORALES_SEMANA && !t->descanso_semanal) {
-		printf("  Advertencia: No se ha tomado el dC-a de descanso semanal.\n");
+		printf("  Advertencia: No se ha tomado el dia de descanso semanal.\n");
 	}
 }
 
@@ -497,7 +498,7 @@ void registrar_horas(int id) {
 		return;
 	}
 
-	printf("Ingrese las horas trabajadas este dC-a para %s: ", t->nombre);
+	printf("Ingrese las horas trabajadas este dia para %s: ", t->nombre);
 	scanf("%f", &horas);
 
 	float jornada_maxima = obtener_jornada_maxima(t->tipo_jornada);
@@ -517,7 +518,7 @@ void registrar_horas(int id) {
 	printf("- Horas extras: %.2f\n", horas_extras);
 
 	if (horas_extras > HORAS_EXTRAS_MAX_DIA) {
-		printf("Advertencia: Se excediC3 el lC-mite diario de horas extras.\n");
+		printf("Advertencia: Se excedio el limite diario de horas extras.\n");
 	}
 
 	analizar_cumplimiento(t);
@@ -528,7 +529,7 @@ void mostrar_menu() {
 	printf("1. Registrar trabajador\n");
 	printf("2. Registrar horas trabajadas este dia\n");
 	printf("3. Salir\n");
-	printf("Seleccione una opciC3n: ");
+	printf("Seleccione una opcion: ");
 }
 
 void mod_cump_asis() {
@@ -553,7 +554,7 @@ void mod_cump_asis() {
 			printf("Saliendo del programa...\n\n\n");
 			break;
 		default:
-			printf("OpciC3n no vC!lida. Intente de nuevo.\n");
+			printf("Opcion no vC!lida. Intente de nuevo.\n");
 		}
 	} while(opcion != 3);
 }
@@ -564,9 +565,9 @@ void mod_cump_asis() {
 //Modulo de Calculo de Salario-----------------------------------------------
 
 #define NUM_EMPLEADOS 5
-#define LONGITUD_FECHA 20  // TamaC1o de la cadena para almacenar la fecha
+#define LONGITUD_FECHA 20  // Tamano de la cadena para almacenar la fecha
 
-// DeclaraciC3n de funciones
+// Declaracion de funciones
 void Mostrar(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_EMPLEADOS],
              float impuestos[NUM_EMPLEADOS], float seguridadSocial[NUM_EMPLEADOS],
              float aportacionInfonavit[NUM_EMPLEADOS], float aportacionAfore[NUM_EMPLEADOS],
@@ -632,7 +633,7 @@ void modulo_calc_salario () {
 	} while (opcion != 3);
 }
 
-// FunciC3n para calcular el ISR basado en el salario bruto
+// Funcion para calcular el ISR basado en el salario bruto
 float calcularISR(float salarioBruto) {
 	float isr = 0.0;
 
@@ -663,7 +664,7 @@ float calcularISR(float salarioBruto) {
 	return isr;
 }
 
-// FunciC3n para calcular la seguridad social
+// Funcion para calcular la seguridad social
 float calcularSeguridadSocial(float salarioBruto) {
 	float salarioDiarioBaseCotizacion = salarioBruto * 0.0696;
 	int diasTrabajados = 15; // Asumimos quincenal
@@ -672,12 +673,12 @@ float calcularSeguridadSocial(float salarioBruto) {
 	return seguridadSocial;
 }
 
-// FunciC3n para calcular la aportaciC3n patronal al INFONAVIT
+// Funcion para calcular la aportacion patronal al INFONAVIT
 float calcularInfonavit(float salarioBruto) {
 	return salarioBruto * 0.05;
 }
 
-// FunciC3n para calcular la aportaciC3n a la AFORE
+// Funcion para calcular la aportacion a la AFORE
 float calcularAfore(float salarioBruto, int edad) {
 	float minimo, maximo;
 	if (edad <= 36) {
@@ -705,13 +706,13 @@ float calcularAfore(float salarioBruto, int edad) {
 	return salarioBruto * (porcentajeAfore / 100);
 }
 
-// FunciC3n para calcular el ahorro anual
+// Funcion para calcular el ahorro anual
 float calcularAhorroAnual(float salarioBruto, float porcentajeAhorro) {
 	float ahorroQuincenal = salarioBruto * (porcentajeAhorro / 100);
 	return ahorroQuincenal * 24 * 2; // Duplicado porque el empleador aporta lo mismo
 }
 
-// FunciC3n para calcular el salario neto quincenal
+// Funcion para calcular el salario neto quincenal
 float calcularSalarioNeto(float salarioBruto, float isr, float seguridadSocial, float afore, float ahorro) {
 	return salarioBruto - (isr + seguridadSocial + afore + ahorro);
 }
@@ -724,7 +725,7 @@ void AgregarEmpleado(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_E
                      char fechaPago[NUM_EMPLEADOS][LONGITUD_FECHA],
                      char lugaresPago[NUM_EMPLEADOS][50]) {
 	if (*numEmpleados >= NUM_EMPLEADOS) {
-		printf("No se pueden agregar mC!s empleados. Capacidad mC!xima alcanzada.\n");
+		printf("No se pueden agregar mas empleados. Capacidad maxima alcanzada.\n");
 		return;
 	}
 
@@ -736,10 +737,11 @@ void AgregarEmpleado(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_E
 
 	printf("Ingrese Edad del Empleado: ");
 	while (scanf("%d", &edades[i]) != 1 || edades[i] < 18 || edades[i] > 100) {
-		printf("Edad no vC!lida. Intente de nuevo: ");
-		while (getchar() != '\n');
+		printf("Edad no valida. Intente de nuevo: ");
+		while (getchar() != '\n'); //Elimina los caracteres no validos del buffer de entrada
 	}
-	while (getchar() != '\n');
+	while (getchar() != '\n'); /*Elimina del buffer el valor válido ingresado para que no
+        						/existan conflictos con la siguiente entrada.*/
 
 	printf("Ingrese Lugar de Pago: ");
 	fgets(lugaresPago[i], sizeof(lugaresPago[i]), stdin);
@@ -751,7 +753,7 @@ void AgregarEmpleado(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_E
 
 	printf("Ingrese el salario bruto: ");
 	while (scanf("%f", &salariosBrutos[i]) != 1) {
-		printf("Caracter no vC!lido para salario bruto. Intente de nuevo: ");
+		printf("Caracter no valido para salario bruto. Intente de nuevo: ");
 		while (getchar() != '\n');
 	}
 	while (getchar() != '\n');
@@ -762,15 +764,15 @@ void AgregarEmpleado(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_E
 	// Calcular la Seguridad Social
 	seguridadSocial[i] = calcularSeguridadSocial(salariosBrutos[i]);
 
-	// Calcular la AportaciC3n al INFONAVIT
+	// Calcular la Aportacion al INFONAVIT
 	aportacionInfonavit[i] = calcularInfonavit(salariosBrutos[i]);
 
-	// Calcular la AportaciC3n a la AFORE
+	// Calcular la Aportacion a la AFORE
 	aportacionAfore[i] = calcularAfore(salariosBrutos[i], edades[i]);
 
 	// Preguntar si la empresa ofrece una caja de ahorro
 	char ofreceCajaAhorro;
-	printf("B?La empresa ofrece una caja de ahorro? (S/N): ");
+	printf("La empresa ofrece una caja de ahorro? (S/N): ");
 	scanf(" %c", &ofreceCajaAhorro);
 	while (getchar() != '\n');
 
@@ -778,7 +780,7 @@ void AgregarEmpleado(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_E
 		printf("Ingrese el porcentaje de su salario que desea aportar quincenalmente a la caja de ahorro (7%% - 13%%): ");
 		float porcentajeAhorro;
 		while (scanf("%f", &porcentajeAhorro) != 1 || porcentajeAhorro < 7 || porcentajeAhorro > 13) {
-			printf("Porcentaje no vC!lido. Intente de nuevo (7%% - 13%%): ");
+			printf("Porcentaje no valido. Intente de nuevo (7%% - 13%%): ");
 			while (getchar() != '\n');
 		}
 		while (getchar() != '\n');
@@ -789,12 +791,12 @@ void AgregarEmpleado(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_E
 
 	// Preguntar si el trabajador pertenece a un sindicato
 	char perteneceSindicato;
-	printf("B?Pertenece a un sindicato? (S/N): ");
+	printf("Pertenece a un sindicato? (S/N): ");
 	scanf(" %c", &perteneceSindicato);
 	while (getchar() != '\n');
 
 	if (perteneceSindicato == 'S' || perteneceSindicato == 's') {
-		printf("La cuota sindical mC-nima es %.2f y la mC!xima es %.2f.\n", salariosBrutos[i] * 0.01, salariosBrutos[i] * 0.03);
+		printf("La cuota sindical minima es %.2f y la maxima es %.2f.\n", salariosBrutos[i] * 0.01, salariosBrutos[i] * 0.03);
 	}
 
 	// Calcular el Salario Neto Quincenal
@@ -815,14 +817,14 @@ void Mostrar(char nombres[NUM_EMPLEADOS][50], float salariosBrutos[NUM_EMPLEADOS
 		printf("\nLos empleados registrados son:\n");
 		for (int i = 0; i < numEmpleados; ++i) {
 			printf("Empleado %d: %s\n", i + 1, nombres[i]);
-			printf("Edad: %d aC1os\n", edades[i]);  // Corregido para mostrar la edad correcta
+			printf("Edad: %d anios\n", edades[i]);  // Corregir para incluir el codigo ascii del caracter
 			printf("Lugar de Pago: %s\n", lugaresPago[i]);
 			printf("Fecha de Pago: %s\n", fechaPago[i]);
 			printf("Salario Bruto: %.2f\n", salariosBrutos[i]);
 			printf("ISR Calculado: %.2f\n", impuestos[i]);
 			printf("Seguridad Social: %.2f\n", seguridadSocial[i]);
-			printf("AportaciC3n al INFONAVIT: %.2f\n", aportacionInfonavit[i]);
-			printf("AportaciC3n a la AFORE: %.2f\n", aportacionAfore[i]);
+			printf("Aportacion al INFONAVIT: %.2f\n", aportacionInfonavit[i]);
+			printf("Aportacion a la AFORE: %.2f\n", aportacionAfore[i]);
 			if (ahorroAnual[i] > 0) {
 				printf("Ahorro Anual en Caja de Ahorro (duplicado por la empresa): %.2f\n", ahorroAnual[i]);
 			}
@@ -842,7 +844,7 @@ void main ()
 		
 		printf ("Bienvenido, a este programa: \n");
 		printf ("Eliga cual modulo desea iniciar: \n");
-		printf ("(1) Sistema de Gestion de Trabajadores.\n"
+		printf ("(1) Modulo de Datos de Trabajadores.\n"
 		        "(2) Modulo de Cumplimiento de Asistencia.\n"
 		        "(3) Modulo de Calculo de Salario.\n"
 		        "(4) Salir.\n");
