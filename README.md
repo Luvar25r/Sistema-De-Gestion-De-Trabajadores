@@ -1,4 +1,4 @@
-# **Labor Management System in C** 🏢👨💼📊  
+# **Labor Management System in C** 🏢  
 
 ## **Contact**  
 **Author:** Luis Eduardo Vadillo Rojas  
